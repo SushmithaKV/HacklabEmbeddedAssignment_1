@@ -1,0 +1,61 @@
+Task: Write a C code using FSM to control a traffic light as described below:
+Transitions:
+○ If we're in state Green and wait for 360 seconds (6 minutes), then we can go to state Yellow.
+○ If we're in state Yellow and wait 10 seconds, then we can go to state Red.
+○ If we're in state Red and wait 120 seconds, then we can go to state Green.
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
+
+typedef enum {
+    GREEN,
+    YELLOW,
+    RED
+} TrafficState;
+
+TrafficState nextState(TrafficState state) {
+    switch (state) {
+        case GREEN:
+            return YELLOW;
+        case YELLOW:
+            return RED;
+        case RED:
+            return GREEN;
+    }
+}
+
+int main() {
+    TrafficState state = GREEN;
+    time_t start_time = time(NULL);
+    while (1) {
+        time_t current_time = time(NULL);
+        switch (state) {
+            case GREEN:
+                if (current_time - start_time >= 360) {
+                    state = nextState(state);
+                    start_time = current_time;
+                }
+                printf("Green Light\n");
+                break;
+            case YELLOW:
+                if (current_time - start_time >= 10) {
+                    state = nextState(state);
+                    start_time = current_time;
+                }
+                printf("Yellow Light\n");
+                break;
+            case RED:
+                if (current_time - start_time >= 120) {
+                    state = nextState(state);
+                    start_time = current_time;
+                }
+                printf("Red Light\n");
+                break;
+        }
+        sleep(1);
+    }
+    return 0;
+}
